@@ -1,42 +1,23 @@
 {
-  "name": "crypto-js",
-  "version": "4.1.1",
+  "name": "escrypto",
+  "version": "0.0.0",
   "description": "JavaScript library of crypto standards.",
-  "license": "MIT",
-  "author": {
-    "name": "Evan Vosberg",
-    "url": "http://github.com/evanvosberg"
+  "scripts": {
+    "prepare": "rm -rf dist/* && tsc"
   },
-  "homepage": "http://github.com/brix/crypto-js",
-  "repository": {
-    "type": "git",
-    "url": "http://github.com/brix/crypto-js.git"
+  "type": "module",
+  "module": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./sha1.js": "./dist/sha1.js"
   },
-  "keywords": [
-    "security",
-    "crypto",
-    "Hash",
-    "MD5",
-    "SHA1",
-    "SHA-1",
-    "SHA256",
-    "SHA-256",
-    "RC4",
-    "Rabbit",
-    "AES",
-    "DES",
-    "PBKDF2",
-    "HMAC",
-    "OFB",
-    "CFB",
-    "CTR",
-    "CBC",
-    "Base64",
-    "Base64url"
+  "files": [
+    "dist/"
   ],
-  "main": "index.js",
-  "dependencies": {},
   "browser": {
     "crypto": false
+  },
+  "devDependencies": {
+    "typescript": "^4.7.4"
   }
 }
