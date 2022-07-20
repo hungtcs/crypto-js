@@ -1,46 +1,40 @@
-import { CryptoJS as C } from './core.js';
-
-var C_lib = C.lib;
-var WordArray = C_lib.WordArray;
-var Hasher = C_lib.Hasher;
-var C_algo = C.algo;
+import { Hasher } from '../core/lib/hasher.js';
+import { WordArray } from '../core/lib/word-array.js';
 
 // Reusable object
-var W: any[] = [];
+const W: any[] = [];
 
-/**
- * SHA-1 hash algorithm.
- */
-export const SHA1 = C.lib.Hasher.extend({
-  _doReset: function () {
-    this._hash = new WordArray.init([
+export class SHA1 extends Hasher {
+
+  public _doReset() {
+    this._hash = new WordArray([
       0x67452301, 0xefcdab89,
       0x98badcfe, 0x10325476,
       0xc3d2e1f0
     ]);
-  },
+  }
 
-  _doProcessBlock: function (M: number[], offset: number) {
+  public  _doProcessBlock(M: number[], offset: number) {
     // Shortcut
-    var H = this._hash.words;
+    const H = this._hash.words;
 
     // Working variables
-    var a = H[0];
-    var b = H[1];
-    var c = H[2];
-    var d = H[3];
-    var e = H[4];
+    let a = H[0];
+    let b = H[1];
+    let c = H[2];
+    let d = H[3];
+    let e = H[4];
 
     // Computation
-    for (var i = 0; i < 80; i++) {
+    for (let i = 0; i < 80; i++) {
       if (i < 16) {
         W[i] = M[offset + i] | 0;
       } else {
-        var n = W[i - 3] ^ W[i - 8] ^ W[i - 14] ^ W[i - 16];
+        const n = W[i - 3] ^ W[i - 8] ^ W[i - 14] ^ W[i - 16];
         W[i] = (n << 1) | (n >>> 31);
       }
 
-      var t = ((a << 5) | (a >>> 27)) + e + W[i];
+      let t = ((a << 5) | (a >>> 27)) + e + W[i];
       if (i < 20) {
         t += ((b & c) | (~b & d)) + 0x5a827999;
       } else if (i < 40) {
@@ -64,15 +58,15 @@ export const SHA1 = C.lib.Hasher.extend({
     H[2] = (H[2] + c) | 0;
     H[3] = (H[3] + d) | 0;
     H[4] = (H[4] + e) | 0;
-  },
+  }
 
-  _doFinalize: function () {
+  public _doFinalize() {
     // Shortcuts
-    var data = this._data;
-    var dataWords = data.words;
+    const data = this._data;
+    const dataWords = data.words;
 
-    var nBitsTotal = this._nDataBytes * 8;
-    var nBitsLeft = data.sigBytes * 8;
+    const nBitsTotal = this._nDataBytes * 8;
+    const nBitsLeft = data.sigBytes * 8;
 
     // Add padding
     dataWords[nBitsLeft >>> 5] |= 0x80 << (24 - nBitsLeft % 32);
@@ -85,12 +79,6 @@ export const SHA1 = C.lib.Hasher.extend({
 
     // Return final computed hash
     return this._hash;
-  },
-
-  clone: function () {
-    var clone = Hasher.clone.call(this);
-    clone._hash = this._hash.clone();
-
-    return clone;
   }
-});
+
+}
