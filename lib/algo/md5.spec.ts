@@ -1,5 +1,5 @@
-import { expect } from '@esm-bundle/chai';
 import { MD5 } from './md5.js';
+import { expect } from '@esm-bundle/chai';
 
 describe('algo/md5', () => {
   it('should get md5sum', () => {
