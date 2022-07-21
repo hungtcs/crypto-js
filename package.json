@@ -16,9 +16,7 @@
   "files": [
     "dist/"
   ],
-  "browser": {
-    "crypto": false
-  },
+  "sideEffects": false,
   "devDependencies": {
     "@esm-bundle/chai": "^4.3.4-fix.0",
     "@typescript-eslint/eslint-plugin": "^5.30.7",
