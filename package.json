@@ -1,6 +1,6 @@
 {
   "name": "escrypto",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "JavaScript library of crypto standards.",
   "scripts": {
     "lint": "eslint \"lib/**/*.ts\"",
