@@ -11,7 +11,10 @@
     "prepublishOnly": "npm run lint && npm run test"
   },
   "type": "module",
-  "module": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./dist/": "./dist/"
+  },
   "types": "./dist/index.d.ts",
   "files": [
     "dist/"

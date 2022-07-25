@@ -1,41 +1,48 @@
+import { WordArray } from '../lib';
 import { SHA1 } from '../lib/algo/sha1';
-import { SHA256 } from '../lib/algo/sha256';
-import { MD5 } from '../lib/algo/md5';
 
-function sha1test() {
+function readFile(file: File, chunkSize: number, callback: (buffer: ArrayBuffer, stat: any, next: null | (() => void)) => void) {
+  let offset = 0;
+  const next = () => {
+    let end: number;
+    if ((end = offset + chunkSize) > file.size) {
+      end = file.size;
+    }
+    const partial = file.slice(offset, end);
+    const stat = { offset, end };
+    const fileReader = new FileReader();
+
+    fileReader.onload = (event) => {
+      const buffer = event.target?.result as ArrayBuffer;
+      callback(buffer, stat, stat.end >= file.size ? null : next);
+    };
+    fileReader.readAsArrayBuffer(partial);
+    offset = end;
+  };
+  next();
+}
+
+function onFileChange(event: Event) {
+  const [file] = Array.from((event.currentTarget as HTMLInputElement).files ?? []);
   const sha1 = new SHA1();
-  console.log({sha1});
-  sha1.update('hello');
-  sha1.update(' world!');
-  const hash = sha1.finalize('\n');
-  const sum = hash.toString();
-  console.log(sum);
-}
-
-function sha256test() {
-  const sha256 = new SHA256();
-  console.log({sha1: sha256});
-  sha256.update('hello');
-  sha256.update(' world!');
-  const hash = sha256.finalize('\n');
-  const sum = hash.toString();
-  console.log(sum);
-}
-
-function md5test() {
-  const md5 = new MD5();
-  console.log({sha1: md5});
-  md5.update('hello');
-  md5.update(' world!');
-  const hash = md5.finalize('\n');
-  const sum = hash.toString();
-  console.log(sum);
+  readFile(
+    file,
+    1 * 1024 * 1024,
+    (chunk, stat, next) => {
+      sha1.update(new WordArray(chunk));
+      if (next) {
+        next();
+      } else {
+        console.log(sha1.finalize().toString());
+      }
+    },
+  );
 }
 
 async function main() {
-  sha1test();
-  sha256test();
-  md5test();
+
+  document.querySelector('#file-selector')?.addEventListener('change', onFileChange);
+
 }
 
 main().catch(err => console.error(err));

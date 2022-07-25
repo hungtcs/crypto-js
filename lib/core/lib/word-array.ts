@@ -4,11 +4,52 @@ import { Encoder } from '../enc/encoder.js';
 import { cryptoSecureRandomInt } from '../util.js';
 
 export class WordArray extends Base {
+  public words: Array<number>;
+  public sigBytes: number;
 
-  constructor(
-      public words: Array<number> = [],
-      public sigBytes: number = words.length * 4) {
+  constructor(typedArray?: ArrayBuffer, sigBytes?: number);
+  constructor(typedArray?: Uint8Array, sigBytes?: number);
+  constructor(typedArray?: Array<number>, sigBytes?: number);
+  constructor(typedArray: Array<number> | Uint8Array | ArrayBuffer = [], sigBytes?: number) {
     super();
+
+    // Convert buffers to uint8
+    if (typedArray instanceof ArrayBuffer) {
+      typedArray = new Uint8Array(typedArray);
+    }
+
+    // Convert other array views to uint8
+    if (
+      typedArray instanceof Int8Array ||
+      (typeof Uint8ClampedArray !== 'undefined' &&
+        typedArray instanceof Uint8ClampedArray) ||
+      typedArray instanceof Int16Array ||
+      typedArray instanceof Uint16Array ||
+      typedArray instanceof Int32Array ||
+      typedArray instanceof Uint32Array ||
+      typedArray instanceof Float32Array ||
+      typedArray instanceof Float64Array
+    ) {
+      typedArray = new Uint8Array(typedArray.buffer, typedArray.byteOffset, typedArray.byteLength);
+    }
+
+    // Handle Uint8Array
+    if (typedArray instanceof Uint8Array) {
+      // Shortcut
+      const typedArrayByteLength = typedArray.byteLength;
+
+      // Extract bytes
+      const words: number[] = [];
+      for (let i = 0; i < typedArrayByteLength; i++) {
+        words[i >>> 2] |= typedArray[i] << (24 - (i % 4) * 8);
+      }
+
+      this.words = words;
+      this.sigBytes = typedArrayByteLength;
+    } else {
+      this.words = typedArray as Array<number>;
+      this.sigBytes = sigBytes ?? (typedArray as Array<number>).length * 4;
+    }
   }
 
   /**
