@@ -1,8 +1,7 @@
 {
   "name": "escrypto",
   "type": "module",
-  "private": true,
-  "version": "0.0.4",
+  "version": "0.0.5",
   "license": "MIT",
   "description": "This is a typescript refactoring of [crypto-js](https://github.com/brix/crypto-js).",
   "scripts": {
